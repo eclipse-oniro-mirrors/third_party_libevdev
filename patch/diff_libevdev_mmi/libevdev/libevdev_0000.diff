@@ -230,6 +230,15 @@ limitations under the License.
  
  enum event_filter_status {
  	EVENT_FILTER_NONE,	/**< Event untouched by filters */
+@@ -52,7 +53,7 @@ update_key_state(struct libevdev *dev, const struct input_event *e);
+ static inline int*
+ slot_value(const struct libevdev *dev, int slot, int axis)
+ {
+-	if (unlikely(slot > dev->num_slots)) {
++	if (unlikely(slot >= dev->num_slots)) {
+ 		log_bug(dev, "Slot %d exceeds number of slots (%d)\n", slot, dev->num_slots);
+ 		slot = 0;
+ 	}
 @@ -359,6 +360,11 @@ init_slots(struct libevdev *dev)
  
  	free_slots(dev);
