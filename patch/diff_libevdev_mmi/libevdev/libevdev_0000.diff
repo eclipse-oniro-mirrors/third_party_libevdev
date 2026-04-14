@@ -222,7 +222,35 @@ limitations under the License.
 
 --- a/libevdev/libevdev.c
 +++ b/libevdev/libevdev.c
-@@ -805,23 +805,38 @@
+@@ -21,6 +21,7 @@
+ #include "event-names.h"
+ 
+ #define MAXEVENTS 64
++#define MAX_SLOTS 256
+ 
+ enum event_filter_status {
+ 	EVENT_FILTER_NONE,	/**< Event untouched by filters */
+@@ -359,6 +360,11 @@ init_slots(struct libevdev *dev)
+ 
+ 	free_slots(dev);
+ 	dev->num_slots = abs_info->maximum + 1;
++	if (dev->num_slots > MAX_SLOTS) {
++		rc = -ENOMEM;
++		goto out;
++	}
++
+ 	dev->mt_slot_vals = calloc(dev->num_slots * ABS_MT_CNT, sizeof(int));
+ 	if (!dev->mt_slot_vals) {
+ 		rc = -ENOMEM;
+@@ -665,7 +671,6 @@ static int
+ sync_mt_state(struct libevdev *dev,
+ 	      struct slot_change_state changes_out[dev->num_slots])
+ {
+-#define MAX_SLOTS 256
+ 	int rc = 0;
+ 	struct slot_change_state changes[MAX_SLOTS] = {0};
+ 	unsigned int nslots = min(MAX_SLOTS, dev->num_slots);
+@@ -805,23 +810,38 @@
  	int rc;
  
  	for (int slot = 0; slot < dev->num_slots;  slot++) {
